@@ -118,18 +118,19 @@ while True:
 			counter += 1
 
 		
-		if (counter >=7) and (counter <= 20) and (avgD<20) and (play == True):
+		if (counter >=7) and (counter <= 20) and (avgD<20) and (play==True):
 			sp.pause_playback()
 			message = "Pause"
 			counter2 = 10
 			counter = 0
 			play = False
 		#same input command, but for Pause
-		#if (counter >=7) and (counter <= 20) and (avgD<20) and (play == False):
-		#	sp.start_playback(device_id=None, context_uri=None, uris=None, offset=None)
-		#	play = True
-
-
+		if (counter >=7) and (counter <= 20) and (avgD<20) and (play == False):
+			sp.start_playback(device_id="704c4a3cf62966beed179493ae7eaf95209e44ff", context_uri=None, uris=None, offset=None)
+			message = "Play"
+			counter2 = 10
+			counter =0
+			play = True
 		if (counter >= 21) and (counter <= 40) and (avgD<20):
 			sp.next_track()
 			message = "Next song"
