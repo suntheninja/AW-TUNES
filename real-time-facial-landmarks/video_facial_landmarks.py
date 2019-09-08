@@ -12,7 +12,6 @@ import time
 import dlib
 import cv2
 from scipy.spatial import distance as dist
-
  
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -34,7 +33,37 @@ vs = VideoStream(usePiCamera=args["picamera"] > 0).start()
 time.sleep(2.0)
 
 counter = 0
-isOpen = False
+message = ""
+counter2 = 0
+
+
+
+##import spotipy
+import os
+import sys
+import json
+import webbrowser
+import spotipy
+import spotipy.util as util
+
+scope = 'user-modify-playback-state'
+
+if len(sys.argv) > 1:
+    username = sys.argv[1]
+
+
+token = util.prompt_for_user_token(username,scope,client_id='36d7d2bcc2134ff08e092e755fb6d73d',client_secret='85f2a0e33f6841199263467625bd0b89',redirect_uri='http://google.com/')
+
+sp = spotipy.Spotify(auth=token)
+
+#creating boolean to detect play/pause
+play = True
+
+
+
+#SpotifyOAuth(36d7d2bcc2134ff08e092e755fb6d73d, 85f2a0e33f6841199263467625bd0b89, http://google.com/, state=None, scope=None, cache_path=None, proxies=None)
+
+
 
 # loop over the frames from the video stream
 while True:
@@ -81,23 +110,44 @@ while True:
 		distC = dist.euclidean(upperMouth[4], lowerMouth[2]) #53 and 56
 		avgD = (distA+distB+distC)/3.
 		
+
+
 		#detecting mouth open and closed
 		#counter to track time
-		if(avgD>15):
+		if(avgD>20):
 			counter += 1
 
 		
-		if (counter >=1) and (counter <= 25) and (avgD<15):
-			cv2.putText(frame, "Pause", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+		if (counter >=7) and (counter <= 20) and (avgD<20) and (play == True):
+			sp.pause_playback()
+			message = "Pause"
+			counter2 = 10
 			counter = 0
-	
-		if (counter >= 26) and (counter <= 49) and (avgD<15):
-			cv2.putText(frame, "Next song", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+			play = False
+		#same input command, but for Pause
+		#if (counter >=7) and (counter <= 20) and (avgD<20) and (play == False):
+		#	sp.start_playback(device_id=None, context_uri=None, uris=None, offset=None)
+		#	play = True
+
+
+		if (counter >= 21) and (counter <= 40) and (avgD<20):
+			sp.next_track()
+			message = "Next song"
+			counter2 = 10
 			counter = 0
-		if (counter >= 50) and (avgD<15):
-			cv2.putText(frame, "Previous song", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+		if (counter >= 41) and (avgD<20):
+			sp.previous_track()
+			message = "Previous song"
+			counter2 = 10
 			counter = 0
-		cv2.putText(frame, str(counter), (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+		#print counter
+		cv2.putText(frame, str(counter), (10, 70), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0,0,0), 2)
+
+		#output message to user
+		if(counter2>0):
+			cv2.putText(frame, message, (10, 30), cv2.FONT_HERSHEY_TRIPLEX, 0.7, (0,0,0), 2)
+			counter2-=1
+		
 
 
 	# show the frame
