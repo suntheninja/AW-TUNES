@@ -24,14 +24,17 @@ args = vars(ap.parse_args())
  
 # initialize dlib's face detector (HOG-based) and then create
 # the facial landmark predictor
-print("[INFO] loading facial landmark predictor...")
+print("[INFO] LOADING YOUR BEAUTY...")
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(args["shape_predictor"])
 
 # initialize the video stream and allow the cammera sensor to warmup
-print("[INFO] camera sensor warming up...")
+print("[INFO] LOADING AHHHHHH ...")
 vs = VideoStream(usePiCamera=args["picamera"] > 0).start()
 time.sleep(2.0)
+
+counter = 0
+isOpen = False
 
 # loop over the frames from the video stream
 while True:
@@ -81,19 +84,22 @@ while True:
 		#detecting mouth open and closed
 		#counter to track time
 		if(avgD>15):
-			cv2.putText(frame, "Mouth open", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
 			counter += 1
-		else:
-			cv2.putText(frame, "Mouth closed", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+
+		
+		if (counter >=1) and (counter <= 25) and (avgD<15):
+			cv2.putText(frame, "Pause", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
 			counter = 0
+	
+		if (counter >= 26) and (counter <= 49) and (avgD<15):
+			cv2.putText(frame, "Next song", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+			counter = 0
+		if (counter >= 50) and (avgD<15):
+			cv2.putText(frame, "Previous song", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+			counter = 0
+		cv2.putText(frame, str(counter), (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
 
 
-
-
-
-
-
-	  
 	# show the frame
 	cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
