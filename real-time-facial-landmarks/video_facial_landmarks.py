@@ -11,6 +11,8 @@ import imutils
 import time
 import dlib
 import cv2
+from scipy.spatial import distance as dist
+
  
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -71,13 +73,20 @@ while True:
 		for (x, y) in lowerMouth2:
 			cv2.circle(frame, (x, y), 1, (0, 255, 0), -1)
 		
-		#distA = dist.euclidean(upperMouth[3], lowerMouth[4]) #52 and 58
-		#distB = dist.euclidean(upperMouth[2], lowerMouth[5]) #51 and 57
-		#distC = dist.euclidean(upperMouth[5], lowerMouth[2]) #53 and 56
-		#avgD = (distA+distB+distC)/3.
-		#if(avgD>5)
-		#	cv2.putTest(frame, "Mouth open", 10, 30, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+		distA = dist.euclidean(upperMouth[3], lowerMouth[4]) #52 and 58
+		distB = dist.euclidean(upperMouth[2], lowerMouth[4]) #51 and 57
+		distC = dist.euclidean(upperMouth[4], lowerMouth[2]) #53 and 56
+		avgD = (distA+distB+distC)/3.
 		
+		#detecting mouth open and closed
+		#counter to track time
+		if(avgD>15):
+			cv2.putText(frame, "Mouth open", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+			counter += 1
+		else:
+			cv2.putText(frame, "Mouth closed", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+			counter = 0
+
 
 
 
